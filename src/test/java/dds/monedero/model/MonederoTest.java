@@ -4,18 +4,39 @@ import dds.monedero.exceptions.MaximaCantidadDepositosException;
 import dds.monedero.exceptions.MaximoExtraccionDiarioException;
 import dds.monedero.exceptions.MontoNegativoException;
 import dds.monedero.exceptions.SaldoMenorException;
+import dds.monedero.model.tipoDeMovimiento.Deposito;
+import dds.monedero.model.tipoDeMovimiento.Extraccion;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MonederoTest {
   private Cuenta cuenta;
+  private Movimiento extraccion;
+  private Movimiento deposito;
 
   @BeforeEach
   public void init() {
     cuenta = new Cuenta();
+  }
+
+  @Test
+  public void laExtraccionSeInstaciaCorrectamente() {
+    extraccion = new Movimiento(LocalDate.now(), 800.0, new Extraccion());
+
+    assertTrue(extraccion.isExtraccion());
+    assertTrue(extraccion.fueExtraido(LocalDate.now()));
+  }
+
+  @Test
+  public void elDepositoSeInstaciaCorrectamente() {
+    deposito = new Movimiento(LocalDate.now(), 500.0, new Deposito());
+
+    assertTrue(deposito.isDeposito());
+    assertTrue(deposito.fueDepositado(LocalDate.now()));
   }
 
   @Test
@@ -57,6 +78,14 @@ public class MonederoTest {
           cuenta.setSaldo(90.0);
           cuenta.sacar(1001.0);
     });
+  }
+
+  @Test
+  public void laExtraccionSeRealizaCorrectamente() {
+    cuenta.poner(1500.0);
+    cuenta.sacar(700.0);
+
+    assertEquals(1500.00 - 700.0, cuenta.getSaldo());
   }
 
   @Test
