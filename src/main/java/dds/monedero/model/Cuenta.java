@@ -4,6 +4,9 @@ import dds.monedero.exceptions.MaximaCantidadDepositosException;
 import dds.monedero.exceptions.MaximoExtraccionDiarioException;
 import dds.monedero.exceptions.MontoNegativoException;
 import dds.monedero.exceptions.SaldoMenorException;
+import dds.monedero.model.tipoDeMovimiento.Deposito;
+import dds.monedero.model.tipoDeMovimiento.Extraccion;
+import dds.monedero.model.tipoDeMovimiento.TipoDeMovimiento;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -35,7 +38,7 @@ public class Cuenta {
       throw new MaximaCantidadDepositosException("Ya excedio los " + 3 + " depositos diarios");
     }
 
-    new Movimiento(LocalDate.now(), cuanto, true).agregateA(this);
+    new Movimiento(LocalDate.now(), cuanto, new Deposito()).agregateA(this);
   }
 
   public void sacar(Double cuanto) {
@@ -51,11 +54,11 @@ public class Cuenta {
       throw new MaximoExtraccionDiarioException("No puede extraer mas de $ " + 1000
           + " diarios, límite: " + limite);
     }
-    new Movimiento(LocalDate.now(), cuanto, false).agregateA(this);
+    new Movimiento(LocalDate.now(), cuanto, new Extraccion()).agregateA(this);
   }
 
-  public void agregarMovimiento(LocalDate fecha, Double cuanto, boolean esDeposito) {
-    Movimiento movimiento = new Movimiento(fecha, cuanto, esDeposito);
+  public void agregarMovimiento(LocalDate fecha, Double cuanto, TipoDeMovimiento tipoDeMovimiento) {
+    Movimiento movimiento = new Movimiento(fecha, cuanto, tipoDeMovimiento);
     movimientos.add(movimiento);
   }
 

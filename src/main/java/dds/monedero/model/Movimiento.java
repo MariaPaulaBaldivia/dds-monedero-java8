@@ -1,5 +1,7 @@
 package dds.monedero.model;
 
+import dds.monedero.model.tipoDeMovimiento.TipoDeMovimiento;
+
 import java.time.LocalDate;
 
 public class Movimiento {
@@ -7,15 +9,15 @@ public class Movimiento {
   //En ningún lenguaje de programación usen jamás doubles para modelar dinero en el mundo real
   //siempre usen numeros de precision arbitraria, como BigDecimal en Java y similares
   private Double monto;
-  private boolean esDeposito;
+  private TipoDeMovimiento tipoDeMovimiento;
 
-  public Movimiento(LocalDate fecha, Double monto, boolean esDeposito) {
+  public Movimiento(LocalDate fecha, Double monto, TipoDeMovimiento tipoDeMovimiento) {
     this.fecha = fecha;
     this.monto = monto;
-    this.esDeposito = esDeposito;
+    this.tipoDeMovimiento = tipoDeMovimiento;
   }
 
-  public double getMonto() {
+  public Double getMonto() {
     return monto;
   }
 
@@ -24,7 +26,7 @@ public class Movimiento {
   }
 
   public boolean fueDepositado(LocalDate fecha) {
-    return isDeposito() && esDeLaFecha(fecha);
+    return tipoDeMovimiento.isDeposito() && esDeLaFecha(fecha);
   }
 
   public boolean fueExtraido(LocalDate fecha) {
@@ -36,23 +38,19 @@ public class Movimiento {
   }
 
   public boolean isDeposito() {
-    return esDeposito;
+    return tipoDeMovimiento.isDeposito();
   }
 
   public boolean isExtraccion() {
-    return !esDeposito;
+    return ! tipoDeMovimiento.isDeposito();
   }
 
   public void agregateA(Cuenta cuenta) {
     cuenta.setSaldo(calcularValor(cuenta));
-    cuenta.agregarMovimiento(fecha, monto, esDeposito);
+    cuenta.agregarMovimiento(fecha, monto, tipoDeMovimiento);
   }
 
   public Double calcularValor(Cuenta cuenta) {
-    if (esDeposito) {
-      return cuenta.getSaldo() + getMonto();
-    } else {
-      return cuenta.getSaldo() - getMonto();
-    }
+    return tipoDeMovimiento.saldoLuegoDeRealizarElMovimiento(cuenta.getSaldo(), this.getMonto());
   }
 }
