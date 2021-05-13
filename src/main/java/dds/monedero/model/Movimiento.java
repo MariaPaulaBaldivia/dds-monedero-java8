@@ -45,12 +45,8 @@ public class Movimiento {
     return ! tipoDeMovimiento.isDeposito();
   }
 
-  public void agregateA(Cuenta cuenta) {
-    cuenta.setSaldo(calcularValor(cuenta));
-    cuenta.agregarMovimiento(fecha, monto, tipoDeMovimiento);
-  }
 
-  public Double calcularValor(Cuenta cuenta) {
-    return tipoDeMovimiento.saldoLuegoDeRealizarElMovimiento(cuenta.getSaldo(), this.getMonto());
+  public Double calcularValor() {
+    return tipoDeMovimiento.realizarElMovimiento(this.getMonto());
   }
 }
