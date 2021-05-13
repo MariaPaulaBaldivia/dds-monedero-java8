@@ -42,19 +42,24 @@ public class Cuenta {
   }
 
   public void sacar(Double cuanto) {
+    this.validarSiSePuedeExtraerMonto(cuanto);
+    Double montoExtraidoHoy = getMontoExtraidoA(LocalDate.now());
+    Double limite = 1000 - montoExtraidoHoy;
+
+    if (cuanto > limite) {
+      throw new MaximoExtraccionDiarioException("No puede extraer mas de $ " + 1000
+          + " diarios, límite: " + limite);
+    }
+    this.agregarMovimiento(LocalDate.now(), cuanto, new Extraccion());
+  }
+
+  public void validarSiSePuedeExtraerMonto(Double cuanto) {
     if (cuanto <= 0) {
       throw new MontoNegativoException(cuanto + ": el monto a ingresar debe ser un valor positivo");
     }
     if (getSaldo() - cuanto < 0) {
       throw new SaldoMenorException("No puede sacar mas de " + getSaldo() + " $");
     }
-    Double montoExtraidoHoy = getMontoExtraidoA(LocalDate.now());
-    Double limite = 1000 - montoExtraidoHoy;
-    if (cuanto > limite) {
-      throw new MaximoExtraccionDiarioException("No puede extraer mas de $ " + 1000
-          + " diarios, límite: " + limite);
-    }
-    this.agregarMovimiento(LocalDate.now(), cuanto, new Extraccion());
   }
 
   public void agregarMovimiento(LocalDate fecha, Double cuanto, TipoDeMovimiento tipoDeMovimiento) {
